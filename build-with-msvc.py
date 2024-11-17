@@ -3,7 +3,7 @@ import os
 import subprocess
 import sys
 
-SRC_DIR_NAMES = ["01-minimal", "02-noop", "03-to-llvmir"]
+SRC_DIR_NAMES = ["01-minimal", "02-noop", "03-to-llvmir", "04-affine"]
 INC_PATH_ENVS = [
     "LLVM_LLVM_INCLUDE_PATH",
     "LLVM_MLIR_INCLUDE_PATH",
