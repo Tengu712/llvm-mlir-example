@@ -28,6 +28,8 @@ cmake ../llvm -G "Visual Studio 17 2022" -A x64 -DLLVM_ENABLE_PROJECTS=mlir -DLL
   - MSVC: `llvm-project/build/tools/mlir/include/`
 - `LLVM_LIBRARY_PATH`
   - MSVC: `llvm-project/build/Release/lib/`
+- `LLVM_BIN_PATH`
+  - MSVC: `llvm-project/build/Release/bin/`
 
 利用するコンパイラに合わせて、次のPythonスクリプトを実行してください。
 ただし、サンプルプログラムの番号(01-minimalであれば`01`)をコマンドライン引数として与えてください。

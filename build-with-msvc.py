@@ -3,14 +3,19 @@ import os
 import subprocess
 import sys
 
-SRC_DIR_NAMES = ["01-minimal", "02-noop", "03-to-llvmir", "04-affine"]
+SRC_DIR_NAMES = ["01-minimal", "02-noop", "03-to-llvmir", "04-affine", "05-sample"]
+L_INC_PATH = "LLVM_LLVM_INCLUDE_PATH"
+M_INC_PATH = "LLVM_MLIR_INCLUDE_PATH"
+L_BUILD_INC_PATH = "LLVM_LLVM_BUILD_INCLUDE_PATH"
+M_BUILD_INC_PATH = "LLVM_MLIR_BUILD_INCLUDE_PATH"
 INC_PATH_ENVS = [
-    "LLVM_LLVM_INCLUDE_PATH",
-    "LLVM_MLIR_INCLUDE_PATH",
-    "LLVM_LLVM_BUILD_INCLUDE_PATH",
-    "LLVM_MLIR_BUILD_INCLUDE_PATH"
+    L_INC_PATH,
+    M_INC_PATH,
+    L_BUILD_INC_PATH,
+    M_BUILD_INC_PATH
 ]
-LIB_PATH_ENV = "LLVM_LIBRARY_PATH"
+LIB_PATH = "LLVM_LIBRARY_PATH"
+BIN_PATH = "LLVM_BIN_PATH"
 OPTIONS = [
     "/EHsc",
     "/std:c++17",
@@ -47,7 +52,20 @@ srcDirName = SRC_DIR_NAMES[srcDirNameIdx]
 rtd = os.path.dirname(__file__).replace("\\", "/")
 srd = rtd + "/" + srcDirName + "/"
 tgd = rtd + "/build/"
-lbd = os.environ.get(LIB_PATH_ENV)
+lbd = os.environ.get(LIB_PATH)
+
+# tablegen
+tds = list(map(lambda n: n.replace("\\", "/"), glob.glob(srd + "**/*.td", recursive=True)))
+opts = [
+    ["-gen-op-decls", "Ops.h.inc"],
+    ["-gen-op-defs", "Ops.cpp.inc"],
+    ["-gen-dialect-decls", "Dialect.h.inc"],
+    ["-gen-dialect-defs", "Dialect.cpp.inc"]
+]
+for td in tds:
+    for opt in opts:
+        if subprocess.run([os.environ.get(BIN_PATH) + "/mlir-tblgen", opt[0], td, "-I", os.environ.get(M_INC_PATH), "-o", td[:-3] + opt[1]]).returncode != 0:
+            exit(1)
 
 # buildディレクトリへカレントディレクトリを移動
 if not os.path.exists(tgd):
